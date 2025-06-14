@@ -10,7 +10,6 @@
 #include <limits>
 #include <queue>
 
-// Splits a CSV line into fields, handling quotes and escaped quotes
 static std::vector<std::string> splitCsvLine(const std::string& line) {
     std::vector<std::string> result;
     std::string field;
@@ -34,12 +33,11 @@ static std::vector<std::string> splitCsvLine(const std::string& line) {
     return result;
 }
 
-// Load bank-correspondent relationships
 std::map<std::string, std::vector<std::string>> loadBanks(const std::string& filename) {
     std::ifstream fin(filename);
     if (!fin) throw std::runtime_error("Cannot open file: " + filename);
     std::string line;
-    std::getline(fin, line); // skip header
+    std::getline(fin, line); 
 
     std::map<std::string, std::vector<std::string>> banks;
     while (std::getline(fin, line)) {
@@ -59,7 +57,6 @@ std::map<std::string, std::vector<std::string>> loadBanks(const std::string& fil
     return banks;
 }
 
-// Commission rule and table
 struct CommissionRule { double threshold, fixedFee, percent; };
 using Rules = std::vector<CommissionRule>;
 class CommissionTable {
@@ -68,7 +65,7 @@ public:
         std::ifstream fin(filename);
         if (!fin) throw std::runtime_error("Cannot open file: " + filename);
         std::string line;
-        std::getline(fin, line); // skip header
+        std::getline(fin, line); 
         while (std::getline(fin, line)) {
             if (line.empty()) continue;
             auto f = splitCsvLine(line);
@@ -98,7 +95,6 @@ private:
 
 struct Edge { int to; double weight; };
 
-// Build graph: edge exists if A and B share a common correspondent
 std::vector<std::vector<Edge>> buildGraph(
     const std::map<std::string, std::vector<std::string>>& corr,
     const CommissionTable& ct,
@@ -127,7 +123,6 @@ std::vector<std::vector<Edge>> buildGraph(
     return graph;
 }
 
-// Dijkstra with hop limit (maxEdges)
 std::pair<double, std::vector<int>> dijkstraLimited(
     const std::vector<std::vector<Edge>>& g,
     int src, int dst, int maxEdges) {
@@ -170,7 +165,6 @@ std::pair<double, std::vector<int>> dijkstraLimited(
     return {best, path};
 }
 
-// Wrapper to find route for given amount
 std::pair<double, std::vector<int>> findRoute(
     double amount, int s, int t,
     const std::map<std::string, std::vector<std::string>>& corr,
@@ -205,7 +199,7 @@ int main() {
             return 1;
         }
         int s = idx[src], t = idx[dst];
-        const int MAX_EDGES = 2; // <= 1 intermediary
+        const int MAX_EDGES = 2; 
 
         double bestCost = std::numeric_limits<double>::infinity();
         std::vector<int> bestPath;
